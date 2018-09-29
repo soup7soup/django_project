@@ -1,0 +1,48 @@
+﻿데이터베이스와 사용자를 추가하기 위해 psql 콘솔을 아래와 같이 실행한다.
+
+sudo su - postgres
+psql
+psql (9.5.4)
+Type "help" for help.
+
+#
+아래와 같이 django_test 데이터베이스와 시스템 계정이 아닌 데이터베이스 사용자 django_user를 추가한다.
+
+CREATE DATABASE django_test;
+CREATE USER django_user WITH PASSWORD 'django_pass';
+ALTER ROLE django_user SET client_encoding TO 'utf8';
+ALTER ROLE django_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE django_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE django_test TO django_user;
+\q
+
+데이터베이스와 사용자를 추가하고 권한까지 부여했으므로 psql 사용자에서 빠져나온다.
+
+exit
+
+------
+
+데이터베이스 접속 설정
+conf/settings.py 파일에서 데이터베이스 연결 설정을 아래와 같이 수정한다. 데이터 접속 정보는 앞서 데이터베이스 생성할 때 입력한 데이터베이스 이름, 아이디, 비밀번호와 같다.
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_test',
+        'USER': 'django_user',
+        'PASSWORD': 'django_pass',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+---------------
+마이그레이션 적용과 슈퍼 유저 생성하기
+
+웹사이트 프로젝트에서 새로 생성된 데이터베이스를 사용하려면 모든 마이그레이션을 적용해야 해요. 가상 환경에서 아래 코드를 실행하세요.
+(myvenv) ~/djangogirls$ python manage.py migrate
+
+블로그에 새 글을 추가하려면 다음 코드를 실행하여 수퍼 유저를 만들어야 해요.
+(myvenv) ~/djangogirls$ python manage.py createsuperuser --username name 
+admin
+pass1234
