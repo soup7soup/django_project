@@ -22,6 +22,12 @@
         </div>
 
         <div class="content container">
+            <div>
+                <form action="" method="get">
+                    <input type="text" name="q" value="{{ q }}">
+                    <input type="submit" value="검색">
+                </form>
+            </div>
             <div class="row">
                 <div class="col-md-8">
                     {% block content %}
